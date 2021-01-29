@@ -7,10 +7,10 @@ const {
   updateAvatar,
 } = require('../controllers/users');
 
-users.get('/users', getUsers);
-users.get('/users/:_id', getCurrentUser);
-users.post('/users', createUser);
-users.patch('/users/me', updateUser);
-users.patch('/users/me/avatar', updateAvatar);
+users.get('/api/users', getUsers);
+users.get('/api/users/:_id', getCurrentUser);
+users.post('/api/users', createUser);
+users.patch('/api/users/me', updateUser);
+users.patch('/api/users/me/avatar', updateAvatar);
 
 module.exports = users;

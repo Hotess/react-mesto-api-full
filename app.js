@@ -13,7 +13,6 @@ const { login, createUser } = require('./controllers/users');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const { validateUser, validateLogin } = require('./middlewares/requestValidation');
 const NotFoundError = require('./errors/NotFoundError.js');
-require('dotenv').config();
 
 const { PORT = 3000 } = process.env;
 
@@ -43,17 +42,17 @@ mongoose.connect('mongodb://localhost:27017/mestodb', {
 
 app.use(requestLogger);
 
-app.get('/crash-test', () => {
+app.get('/api/crash-test', () => {
   setTimeout(() => {
     throw new Error('Сервер сейчас упадёт');
   }, 0);
 });
 
-app.post('/signin', validateLogin, login);
-app.post('/signup', validateUser, createUser);
+app.post('/api/signin', validateLogin, login);
+app.post('/api/signup', validateUser, createUser);
 
-app.use('/', auth, users);
-app.use('/', auth, cards);
+app.use('/api', auth, users);
+app.use('/api', auth, cards);
 
 app.use(() => {
   throw new NotFoundError({ message: 'Запрашиваемый ресурс не найден' });
