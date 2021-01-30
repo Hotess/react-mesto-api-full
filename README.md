@@ -1,4 +1,4 @@
-# Проект Mesto фронтенд + бэкенд
+# Проект [Mesto](http://leon.students.nomoreparties.xyz) фронтенд + бэкенд.
 
 ## Директории
 
@@ -10,5 +10,5 @@
 
 ## Запуск проекта
 
-`npm run start` — запускает сервер   
+`npm run start` — запускает проект   
 `npm run dev` — запускает сервер с hot-reload
