@@ -23,6 +23,14 @@ app.disable('x-powered-by');
 
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://leon.students.nomoreparties.xyz');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+
+  next();
+});
+
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
