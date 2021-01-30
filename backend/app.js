@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -22,14 +23,6 @@ app.use(helmet());
 app.disable('x-powered-by');
 
 app.use(cookieParser());
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
-
-  next();
-});
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -78,6 +71,8 @@ app.use((err, req, res, next) => {
   res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
   next();
 });
+
+app.use('/', cors());
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
