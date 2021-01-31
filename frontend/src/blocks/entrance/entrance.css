@@ -1,0 +1,14 @@
+.entrance {
+	margin: 40px 0 300px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	flex-grow: 1;
+}
+
+@media (min-width:1280px) {
+	.entrance {
+		margin-top: 60px;
+
+	}
+}

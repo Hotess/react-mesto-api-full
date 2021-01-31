@@ -1,0 +1,17 @@
+.logo {
+	width: 104px;
+	padding-bottom: 30px;
+	user-select: none;
+	transition: 0.3s ease;
+}
+
+.logo:hover {
+	opacity: .6;
+}
+
+@media (min-width: 1280px) {
+	.logo {
+		width: auto;
+		padding-bottom: 40px;
+	}
+}

@@ -1,0 +1,18 @@
+.header__auth-info-mobile {
+	display: grid;
+	grid-template-rows: repeat(2, min-content);
+	justify-items: center;
+	padding: 12px 0 20px;
+	margin: 0 auto;
+	grid-row-gap: 18px;
+	font-size: 18px;
+	line-height: 22px;
+	border-bottom: 1px solid rgba(84,84,84,.7);
+	margin-bottom: 20px;
+}
+
+@media (min-width:  576px) {
+	.header__auth-info-mobile{
+		display: none;
+	}
+}

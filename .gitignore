@@ -11,9 +11,7 @@ node_modules
 # testing
 /coverage
 
-# production
-/frontend/src
-/frontend/public
+
 
 # Optional npm cache directory
 .npm

@@ -1,0 +1,9 @@
+.popup__close_type_infoTooltip {
+    margin-right: -50px;
+}
+
+@media(min-width: 1280px) {
+    .popup__close_type_infoTooltip {
+        margin-right: 0;
+    }
+}

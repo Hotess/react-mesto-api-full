@@ -1,0 +1,13 @@
+.popup__heading_type_infoTooltip {
+	font-size: 20px;
+	line-height: 24px;
+	text-align: center;
+	margin: 0;
+}
+
+@media (min-width: 1280px) {
+	.popup__heading_type_infoTooltip  {
+		font-size: 24px;
+		line-height: 29px;
+	}
+}

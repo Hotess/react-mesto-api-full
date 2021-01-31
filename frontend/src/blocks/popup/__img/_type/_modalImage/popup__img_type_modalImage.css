@@ -1,0 +1,7 @@
+.popup__img_type_modalImage {
+	max-width: 75vw;
+	max-height: 75vh;
+	object-fit: cover;
+	border-top: 0;
+	user-select: none;
+}

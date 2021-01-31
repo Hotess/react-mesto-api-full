@@ -1,0 +1,14 @@
+.form__subtext {
+	margin: 20px 0 0;
+	color: white;
+	font-weight: normal;
+	font-size: 14px;
+	line-height: 17px;
+	text-align: center;
+}
+
+@media screen and (min-width: 1280px) {
+	.form__subtext {
+		margin-top: 15px;
+	}
+}

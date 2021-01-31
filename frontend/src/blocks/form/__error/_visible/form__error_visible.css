@@ -1,0 +1,6 @@
+.form__error_visible {
+	margin-top: 5px;
+	display: block;
+	visibility: visible;
+	opacity: 1;
+}

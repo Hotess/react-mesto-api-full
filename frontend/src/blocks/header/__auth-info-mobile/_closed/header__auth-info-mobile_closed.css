@@ -1,0 +1,14 @@
+@keyframes close {
+	from {
+		transform: scaleY(1);
+	}
+	
+	to {
+		transform: scaleY(0);
+	}
+}
+
+.header__auth-info-mobile_closed {
+	animation: close ease-in-out 0.5s forwards;
+
+}

@@ -1,0 +1,13 @@
+@keyframes open {
+	from {
+		transform: scaleY(0);
+	}
+	
+	to {
+		transform: scaleY(1);
+	}
+}
+
+.header__auth-info-mobile_opened {
+	animation: open ease-in-out 0.5s forwards;
+}

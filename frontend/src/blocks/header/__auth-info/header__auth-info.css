@@ -1,0 +1,15 @@
+.header__auth-info {
+	display: none;
+}
+
+@media (min-width: 576px) {
+	.header__auth-info {
+		display: grid;
+		grid-template-columns: repeat(2, max-content);
+		grid-template-rows: min-content;
+		grid-column-gap: 24px;
+		font-size: 18px;
+		line-height: 22px;
+		padding-top: 6px;
+	}
+}
