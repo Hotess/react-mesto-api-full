@@ -78,7 +78,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -95,6 +95,8 @@ module.exports.login = (req, res, next) => {
           sameSite: true,
         });
       res.send({ message: 'Авторизация прошла успешна' });
+      // eslint-disable-next-line prefer-promise-reject-errors
+      return Promise.reject(`${user}`);
     })
-    .catch((err) => { console.log(err); });
+    .catch((err) => console.log(err));
 };
