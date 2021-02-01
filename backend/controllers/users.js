@@ -78,7 +78,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -96,9 +96,5 @@ module.exports.login = (req, res) => {
         });
       res.send({ message: 'Авторизация прошла успешна' });
     })
-    .catch((err) => {
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+    .catch((err) => { console.log(err); });
 };

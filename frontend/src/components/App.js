@@ -94,13 +94,12 @@ function App() {
 
     /** Авторизироваться */
     function handleLogin(password, email) {
-        console.log(email);
         auth.authorize(escape(password), email)
             .then((data) => {
                 setEmail(data.email);
                 setLoggedIn(true);
                 setMessage({ iconPath: resolvePath, text: 'Вы успешно вошли в приложение!' });
-                history.push('/api');
+                history.push('/');
             })
             .catch((err) => setMessage({ iconPath: rejectPath, text: err.message }));
 
