@@ -78,7 +78,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -93,8 +93,12 @@ module.exports.login = (req, res, next) => {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
           sameSite: true,
-        })
-        .send({ message: 'Успешная авторизация' });
+        });
+      res.send({ message: 'Авторизация прошла успешна' });
     })
-    .catch(next);
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
 };

@@ -54,27 +54,31 @@ function App() {
 
     /**  Получить данные пользователя */
     React.useEffect(() => {
-        api.getUserInfo()
-            .then((res) => {
-                setCurrentUser(res);
-            })
-            .catch((err) => console.log(`Ошибка при загрузке информации о пользователе: ${err}`));
-    }, []);
+        if (loggedIn) {
+            api.getUserInfo()
+                .then((res) => {
+                    setCurrentUser(res);
+                })
+                .catch((err) => console.log(`Ошибка при загрузке информации о пользователе: ${err}`));
+        }
+    }, [loggedIn]);
 
     /** Проверить токен на актуальность */
     React.useEffect(() => {
-        const jwt = localStorage.getItem('jwt');
+        if (loggedIn) {
+            const jwt = localStorage.getItem('jwt');
 
-        if (jwt) {
-            auth.getContent(jwt)
-                .then((res) => {
-                    setLoggedIn(true);
-                    setEmail(res.data.email);
-                    history.push('/');
-                })
-                .catch(err => console.log(err));
+            if (jwt) {
+                auth.getContent(jwt)
+                    .then((res) => {
+                        setLoggedIn(true);
+                        setEmail(res.data.email);
+                        history.push('/');
+                    })
+                    .catch(err => console.log(err));
+            }
         }
-    }, [history]);
+    }, [loggedIn, history]);
 
     /** Зарегистрироваться */
     function handleRegister(password, email) {
@@ -90,6 +94,7 @@ function App() {
 
     /** Авторизироваться */
     function handleLogin(password, email) {
+        console.log(email);
         auth.authorize(escape(password), email)
             .then((data) => {
                 setEmail(data.email);
@@ -112,12 +117,14 @@ function App() {
 
     /** Получить данные карточек из сервера */
     React.useEffect(() => {
-        api.getInitialCards()
-            .then((cardData) => {
-                setCards(cardData);
-            })
-            .catch((err) => console.log(`Ошибка при загрузке карточек: ${err}`));
-    }, []);
+        if(loggedIn) {
+            api.getInitialCards()
+                .then((cardData) => {
+                    setCards(cardData);
+                })
+                .catch((err) => console.log(`Ошибка при загрузке карточек: ${err}`));
+        }
+    }, [loggedIn]);
 
     /** Поставить/убрать лайк */
     function handleCardLike(card) {
