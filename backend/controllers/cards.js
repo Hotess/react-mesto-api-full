@@ -1,5 +1,8 @@
+const { Types } = require('mongoose');
 const Card = require('../models/card');
 const currentError = require('../utils/errors');
+
+const { ObjectId } = Types;
 
 module.exports.getCards = (req, res) => {
   Card.find({})
@@ -20,13 +23,20 @@ module.exports.createCard = (req, res, next) => {
 };
 
 module.exports.deleteCard = (req, res, next) => {
-  Card.findByIdAndDelete(req.params._id)
-    .orFail()
-    .catch((err) => {
-      currentError(err, res, 'Указаны некорректные данные при обновлении пользователя:');
-    })
-    .then((card) => res.send({ data: card }))
-    .catch(next);
+  const { cardId } = req.params;
+  if (!ObjectId.isValid(cardId)) next(new Error('Некорректный ID')).message;
+  try {
+    const deletingCard = Card.findById(cardId);
+    if (!deletingCard) next(new Error('Карточка не найдена.').message);
+    if (deletingCard.owner.toString() !== req.user._id.toString()) {
+      return next(new Error('Нельзя удалять чужую карточку!').message);
+    }
+    Card.findByIdAndDelete(cardId);
+
+    return res.status(200).send({ message: 'Карточка удалена' });
+  } catch (e) {
+    next(e);
+  }
 };
 
 module.exports.likeCard = (req, res, next) => {
