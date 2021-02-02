@@ -14,7 +14,7 @@ function Main(props) {
         onCardLike,
         onCardDelete,
 	} = props;
-	
+	console.log(!!(cards));
 	return (
 		<main>
 			<section className="profile">
@@ -43,7 +43,7 @@ function Main(props) {
 				/>
 			</section>
 			<section className="elements">
-				{cards.map((card) => (
+				{ cards? cards.map((card) => (
 					<Card
 						key={card._id}
 						card={card}
@@ -51,7 +51,7 @@ function Main(props) {
             			onCardLike={onCardLike}
             			onCardDelete={onCardDelete}
 					/>
-				))}
+				)): null}
 			</section>
 		</main>
 	);

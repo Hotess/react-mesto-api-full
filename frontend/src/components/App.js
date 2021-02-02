@@ -95,8 +95,8 @@ function App() {
     /** Авторизироваться */
     function handleLogin(password, email) {
         auth.authorize(escape(password), email)
-            .then((data) => {
-                setEmail(data.email);
+            .then(() => {
+                setEmail(email);
                 setLoggedIn(true);
                 setMessage({ iconPath: resolvePath, text: 'Вы успешно вошли в приложение!' });
                 history.push('/');
@@ -119,7 +119,7 @@ function App() {
         if(loggedIn) {
             api.getInitialCards()
                 .then((cardData) => {
-                    setCards(cardData);
+                    setCards(cardData.data);
                 })
                 .catch((err) => console.log(`Ошибка при загрузке карточек: ${err}`));
         }
@@ -127,6 +127,7 @@ function App() {
 
     /** Поставить/убрать лайк */
     function handleCardLike(card) {
+        console.log(card);
         const isLiked = card.likes.some((i) => i._id === currentUser._id);
 
           api.changeLikeCardStatus(card._id, !isLiked)
@@ -200,7 +201,7 @@ function App() {
 
     api.updateUserAvatar(newAvatar)
         .then((res) => {
-            setCurrentUser(res);
+            setCurrentUser(res.data);
             closeAllPopups();
         })
         .catch((err) => console.log(`Ошибка при обновлении аватара: ${err}`))

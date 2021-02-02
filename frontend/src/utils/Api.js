@@ -25,7 +25,7 @@ class Api {
 
   	/** Получение данные пользователя */
   	getUserInfo() {
-    	return this._sendRequest(`users`, {
+    	return this._sendRequest(`users/me`, {
       		headers: this._headers,
     	});
 	}

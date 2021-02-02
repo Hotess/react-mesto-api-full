@@ -7,7 +7,7 @@ const {
 } = require('../controllers/users');
 
 users.get('/users', getUsers);
-users.get('/users/:_id', getCurrentUser);
+users.get('/users/me', getCurrentUser);
 users.patch('/users/me', updateUser);
 users.patch('/users/me/avatar', updateAvatar);
 

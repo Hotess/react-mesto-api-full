@@ -13,12 +13,12 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
-  User.findById(req.params._id)
+  User.findById(req.user._id)
     .orFail()
     .catch((err) => {
       currentError(err, res);
     })
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send({ data: user.data }))
     .catch(next);
 };
 
@@ -78,7 +78,7 @@ module.exports.updateAvatar = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -94,9 +94,7 @@ module.exports.login = (req, res) => {
           httpOnly: true,
           sameSite: true,
         });
-      res.send({ message: 'Авторизация прошла успешна' });
-      // eslint-disable-next-line prefer-promise-reject-errors
-      return Promise.reject(`${user}`);
+      res.send({ data: token });
     })
-    .catch((err) => console.log(err));
+    .catch(next);
 };
