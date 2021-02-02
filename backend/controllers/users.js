@@ -1,72 +1,95 @@
-const { Types } = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const NotFoundError = require('../errors/NotFoundError');
+const { currentError } = require('../utils/errors');
 const AlreadyExistsError = require('../errors/AlreadyExistsError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
-const { ObjectId } = Types;
-
-const getUsers = async function (req, res, next) {
-  try {
-    const users = await User.find({});
-    return res.send({ users });
-  } catch (e) {
-    next(e);
-  }
-};
-const getCurrentUser = async function (req, res, next) {
-  const userId = req.user._id;
-  try {
-    if (!ObjectId.isValid(userId)) next(new NotFoundError('Неправильное значение ID'));
-    const user = await User.findById(userId);
-    if (!user) next(new NotFoundError('Неправильное значение ID'));
-    return res.send(user);
-  } catch (e) {
-    next(e);
-  }
+module.exports.getUsers = (req, res, next) => {
+  User.find({})
+    .then((users) => res.send(users))
+    .catch(next);
 };
 
-const checkToken = async function (req, res, next) {
-  const userId = req.params.id;
-  try {
-    if (!ObjectId.isValid(req.params.id)) next(new NotFoundError('Неправильное значение ID'));
-    const user = await User.findById(userId);
-    if (!user) {
-      next(new NotFoundError('Неправильное значение ID'));
-    } else {
-      return res.send(user);
-    }
-  } catch (e) {
-    next(e);
-  }
+module.exports.checkToken = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail((err) => currentError(err, res))
+    .then((user) => {
+      res.send(user);
+    })
+    .catch(next);
 };
 
-const createUser = async function (req, res, next) {
-  try {
-    const { email, password } = req.body;
-    const isRegistered = await User.findOne({ email });
-    if (isRegistered) {
-      next(new AlreadyExistsError('Пользователь с таким email уже существует'));
-    } else {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = new User({ email, password: hashedPassword });
-      await user.save();
-      const sendingUser = user.toObject();
-      delete sendingUser.password;
-      return res.status(201).send(sendingUser);
-    }
-  } catch (e) {
-    next(e);
-  }
+module.exports.getCurrentUser = (req, res, next) => {
+  User.findById(req.user._id)
+    .orFail()
+    .catch((err) => {
+      currentError(err, res);
+    })
+    .then((user) => res.send(user))
+    .catch(next);
 };
 
-const login = async function (req, res, next) {
+module.exports.createUser = (req, res, next) => {
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
+
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
+    .catch((err) => {
+      if (err.name === 'MongoError' || err.code === 11000) {
+        throw new AlreadyExistsError({ message: 'Пользователь с таким email уже зарегистрирован' });
+      } else next(err);
+    })
+
+    .then((user) => res.status(201).send({
+      name: user.name, about: user.about, avatar, email: user.email,
+    }))
+    .catch(next);
+};
+
+module.exports.updateUser = (req, res, next) => {
+  const { name, about } = req.body;
+
+  User.findByIdAndUpdate(req.user._id,
+    { name, about },
+    {
+      new: true,
+      runValidators: true,
+    })
+    .orFail((err) => currentError(err, res))
+    .catch((err) => {
+      currentError(err, res);
+    })
+    .then((user) => res.send(user))
+    .catch(next);
+};
+
+module.exports.updateAvatar = (req, res, next) => {
+  const { avatar } = req.body;
+
+  User.findByIdAndUpdate(req.user._id,
+    { avatar },
+    {
+      new: true,
+      runValidators: true,
+    })
+    .orFail((err) => currentError(err, res))
+    .catch((err) => {
+      currentError(err, res);
+    })
+    .then((newAvatar) => res.send(newAvatar))
+    .catch(next);
+};
+
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  return await User.findUserByCredentials(email, password)
+  return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
@@ -76,36 +99,4 @@ const login = async function (req, res, next) {
       res.send({ token });
     })
     .catch(next);
-};
-
-const updateUser = async function (req, res, next) {
-  const userId = req.user._id;
-  try {
-    const user = await User
-      .findByIdAndUpdate(userId, { $set: req.body }, { new: true, runValidators: true });
-    if (!user) {
-      next(new NotFoundError('Неправильное значение ID'));
-    } else {
-      return res.send(user);
-    }
-  } catch (e) {
-    next(e);
-  }
-};
-
-const updateAvatar = async function (req, res, next) {
-  const userId = req.user._id;
-  const { avatar } = req.body;
-  try {
-    const user = await User
-      .findByIdAndUpdate(userId, { $set: { avatar } }, { new: true, runValidators: true });
-    if (!user) next(new NotFoundError('Неправильное значение ID'));
-    return res.send(user);
-  } catch (e) {
-    next(e);
-  }
-};
-
-module.exports = {
-  getUsers, checkToken, createUser, updateUser, updateAvatar, login, getCurrentUser,
 };
