@@ -65,6 +65,7 @@ function App() {
 
     /** Проверить токен на актуальность */
     React.useEffect(() => {
+        if (loggedIn) {
             const jwt = localStorage.getItem('jwt');
 
             if (jwt) {
@@ -76,7 +77,8 @@ function App() {
                     })
                     .catch(err => console.log(err));
             }
-    }, [history]);
+        }
+    }, [loggedIn, history]);
 
     /** Зарегистрироваться */
     function handleRegister(password, email) {
