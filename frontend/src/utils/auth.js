@@ -29,10 +29,10 @@ export const authorize = (password, email) => fetch(`${BASE_URL}/signin`, {
 .then((res) => {
 	return res.ok ? res.json() : Promise.reject(res);
 })
-.then((token) => {
-	localStorage.setItem('jwt', token);
+.then((data) => {
+	localStorage.setItem('jwt', data.token);
 
-	return token;
+	return data.token;
 })
 .catch(err => {
 	if (err.status === 400) {
