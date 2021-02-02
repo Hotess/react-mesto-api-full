@@ -7,7 +7,7 @@ const { ObjectId } = Types;
 module.exports.getCards = (req, res) => {
   Card.find({})
     .populate('user')
-    .then((cards) => res.send({ data: cards.data }))
+    .then((cards) => res.send({ data: cards }))
     .catch((err) => currentError(err, res));
 };
 

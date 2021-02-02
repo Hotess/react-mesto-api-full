@@ -65,7 +65,6 @@ function App() {
 
     /** Проверить токен на актуальность */
     React.useEffect(() => {
-        if (loggedIn) {
             const jwt = localStorage.getItem('jwt');
 
             if (jwt) {
@@ -77,8 +76,7 @@ function App() {
                     })
                     .catch(err => console.log(err));
             }
-        }
-    }, [loggedIn, history]);
+    }, [history]);
 
     /** Зарегистрироваться */
     function handleRegister(password, email) {
@@ -96,7 +94,7 @@ function App() {
     function handleLogin(password, email) {
         auth.authorize(escape(password), email)
             .then(() => {
-                setEmail(email);
+                // setEmail(email);
                 setLoggedIn(true);
                 setMessage({ iconPath: resolvePath, text: 'Вы успешно вошли в приложение!' });
                 history.push('/');

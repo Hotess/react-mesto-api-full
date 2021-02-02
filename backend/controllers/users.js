@@ -18,7 +18,7 @@ module.exports.getCurrentUser = (req, res, next) => {
     .catch((err) => {
       currentError(err, res);
     })
-    .then((user) => res.send({ data: user.data }))
+    .then((user) => res.send({ data: user }))
     .catch(next);
 };
 

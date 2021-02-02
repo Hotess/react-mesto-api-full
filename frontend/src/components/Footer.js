@@ -1,8 +1,8 @@
-/** Создать цельный компонент подвал*/
+/** Создать цельный компонент подвал */
 function Footer() {
   return (
 	  <footer className="footer">
-	  	<p className="footer__text">&copy; 2020 Mesto Russia</p>
+	  	<p className="footer__text">&copy; 2021 Mesto Russia</p>
 	  </footer>
   );
 }
