@@ -19,7 +19,7 @@ const getUsers = async function (req, res, next) {
   }
 };
 const getCurrentUser = async function (req, res, next) {
-  const userId = req.params.id;
+  const userId = req.user._id;
   try {
     if (!ObjectId.isValid(userId)) next(new NotFoundError('Неправильное значение ID'));
     const user = await User.findById(userId);
@@ -31,7 +31,7 @@ const getCurrentUser = async function (req, res, next) {
 };
 
 const checkToken = async function (req, res, next) {
-  const userId = req.user._id;
+  const userId = req.params.id;
   try {
     if (!ObjectId.isValid(req.params.id)) next(new NotFoundError('Неправильное значение ID'));
     const user = await User.findById(userId);
