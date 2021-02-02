@@ -1,40 +1,14 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
-const bcrypt = require('bcryptjs');
-const UnauthorizedError = require('../errors/UnauthorizedError');
+const { model, Schema } = require('mongoose');
+const { linkValidator, emailValidator } = require('../validation/index');
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    minlength: 2,
-    maxlength: 30,
-    default: 'Жак-Ив Кусто',
-  },
-  about: {
-    type: String,
-    minlength: 2,
-    maxlength: 30,
-    default: 'Исследователь',
-  },
-  avatar: {
-    type: String,
-    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
-    validate: {
-      validator(link) {
-        return validator.isURL(link);
-      },
-      message: 'Введён некорректный URL',
-    },
-  },
+const userSchema = new Schema({
   email: {
     type: String,
     required: true,
     unique: true,
     validate: {
-      validator(email) {
-        return validator.isEmail(email);
-      },
-      message: 'Введён некорректный email',
+      validator: emailValidator,
+      message: 'Некоректный email',
     },
   },
   password: {
@@ -43,23 +17,26 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     select: false,
   },
+  name: {
+    type: String,
+    minlength: 2,
+    maxlength: 30,
+    default: 'Жак-Ив Кусто',
+  },
+  about: {
+    type: String,
+    default: 'Исследователь',
+    minlength: 3,
+    maxlength: 30,
+  },
+  avatar: {
+    type: String,
+    validate: {
+      validator: linkValidator,
+      message: 'Некорректная ссылка',
+    },
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+  },
 });
 
-userSchema.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email }).select('+password')
-    .then((user) => {
-      if (!user) {
-        throw new UnauthorizedError({ message: 'Неправильные email или пароль' });
-      }
-      return bcrypt.compare(password, user.password)
-        .then((matched) => {
-          if (!matched) {
-            throw new UnauthorizedError({ message: 'Неправильные email или пароль' });
-          }
-
-          return user;
-        });
-    });
-};
-
-module.exports = mongoose.model('user', userSchema);
+module.exports = model('user', userSchema);

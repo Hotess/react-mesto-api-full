@@ -1,17 +1,23 @@
-const users = require('express').Router();
-const { validateAvatar, validateUserUpdate, validateId } = require('../middlewares/requestValidation');
+const router = require('express').Router();
 const {
-  getUsers,
-  getCurrentUser,
-  updateUser,
-  updateAvatar,
-  checkToken,
+  getUsers, getProfile, createUser, updateUser, updateAvatar, signin, getCurrentUser,
 } = require('../controllers/users');
+const auth = require('../middlewares/auth');
+const {
+  getValidation,
+  getUserValidation,
+  updateUserValidation,
+  updateAvatarValidation,
+  signinValidation,
+  signupValidation,
+} = require('../validation/index');
 
-users.get('/users', getUsers);
-users.get('/users/:id', getCurrentUser);
-users.get('/users/me', validateId, checkToken);
-users.patch('/users/me', validateUserUpdate, updateUser);
-users.patch('/users/me/avatar', validateAvatar, updateAvatar);
+router.get('/users', getValidation, auth, getUsers);
+router.get('/users/me', getValidation, auth, getCurrentUser);
+router.get('/users/:id', getUserValidation, auth, getProfile);
+router.patch('/users/me', updateUserValidation, auth, updateUser);
+router.patch('/users/me/avatar', updateAvatarValidation, auth, updateAvatar);
+router.post('/signin', signinValidation, signin);
+router.post('/signup', signupValidation, createUser);
 
-module.exports = users;
+module.exports = router;
