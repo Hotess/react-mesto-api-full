@@ -63,6 +63,17 @@ function App() {
         }
     }, [loggedIn]);
 
+    /** Получить данные карточек из сервера */
+    React.useEffect(() => {
+        if(loggedIn) {
+            api.getInitialCards()
+                .then((cardData) => {
+                    setCards(cardData);
+                })
+                .catch((err) => console.log(`Ошибка при загрузке карточек: ${err}`));
+        }
+    }, [loggedIn]);
+
     /** Проверить токен на актуальность */
     React.useEffect(() => {
         if (loggedIn) {
@@ -72,7 +83,7 @@ function App() {
                 auth.getContent(jwt)
                     .then((res) => {
                         setLoggedIn(true);
-                        setEmail(res.data.email);
+                        setEmail(res.email);
                         history.push('/');
                     })
                     .catch(err => console.log(err));
@@ -114,20 +125,8 @@ function App() {
         history.push('/sign-in');
     }
 
-    /** Получить данные карточек из сервера */
-    React.useEffect(() => {
-        if(loggedIn) {
-            api.getInitialCards()
-                .then((cardData) => {
-                    setCards(cardData.data);
-                })
-                .catch((err) => console.log(`Ошибка при загрузке карточек: ${err}`));
-        }
-    }, [loggedIn]);
-
     /** Поставить/убрать лайк */
     function handleCardLike(card) {
-        console.log(card);
         const isLiked = card.likes.some((i) => i._id === currentUser._id);
 
           api.changeLikeCardStatus(card._id, !isLiked)
@@ -201,7 +200,7 @@ function App() {
 
     api.updateUserAvatar(newAvatar)
         .then((res) => {
-            setCurrentUser(res.data);
+            setCurrentUser(res);
             closeAllPopups();
         })
         .catch((err) => console.log(`Ошибка при обновлении аватара: ${err}`))

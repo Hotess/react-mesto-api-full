@@ -14,7 +14,7 @@ function Main(props) {
         onCardLike,
         onCardDelete,
 	} = props;
-	console.log(!!(cards));
+
 	return (
 		<main>
 			<section className="profile">

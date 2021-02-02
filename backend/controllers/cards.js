@@ -4,7 +4,7 @@ const currentError = require('../utils/errors');
 module.exports.getCards = (req, res) => {
   Card.find({})
     .populate('user')
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch((err) => currentError(err, res));
 };
 
@@ -15,7 +15,7 @@ module.exports.createCard = (req, res, next) => {
     .catch((err) => {
       currentError(err, res);
     })
-    .then((card) => res.status(201).send({ data: card }))
+    .then((card) => res.status(201).send(card))
     .catch(next);
 };
 
@@ -28,10 +28,12 @@ module.exports.deleteCard = (req, res, next) => {
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
         currentError({ err: { name: 'ForbiddenError' } }, res);
+      } else {
+        currentError({ err: { name: 'NotFoundError' } }, res);
       }
       Card.findByIdAndDelete(req.params._id)
         .then((cardData) => {
-          res.send({ data: cardData });
+          res.send(cardData);
         })
         .catch(next);
     })
@@ -46,7 +48,7 @@ module.exports.likeCard = (req, res, next) => {
     .catch((err) => {
       currentError(err, res);
     })
-    .then((likes) => res.send({ data: likes }))
+    .then((likes) => res.send(likes))
     .catch(next);
 };
 
@@ -58,6 +60,6 @@ module.exports.dislikeCard = (req, res, next) => {
     .catch((err) => {
       currentError(err, res);
     })
-    .then((likes) => res.send({ data: likes }))
+    .then((likes) => res.send(likes))
     .catch(next);
 };
