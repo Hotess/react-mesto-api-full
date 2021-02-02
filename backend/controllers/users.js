@@ -55,7 +55,7 @@ module.exports.updateUser = (req, res, next) => {
     })
     .orFail((err) => currentError(err, res))
     .catch((err) => {
-      currentError(err, res, 'Указаны некорректные данные при обновлении пользователя:');
+      currentError(err, res);
     })
     .then((user) => res.send({ data: user }))
     .catch(next);
@@ -72,7 +72,7 @@ module.exports.updateAvatar = (req, res, next) => {
     })
     .orFail((err) => currentError(err, res))
     .catch((err) => {
-      currentError(err, res, 'Указаны некорректные данные при обновлении аватара:');
+      currentError(err, res);
     })
     .then((newAvatar) => res.send({ data: newAvatar }))
     .catch(next);
