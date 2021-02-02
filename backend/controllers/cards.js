@@ -27,7 +27,7 @@ const createCard = async function (req, res, next) {
 };
 
 const deleteCard = async function (req, res, next) {
-  const { cardId } = req.params;
+  const cardId = req.params.id;
   if (!ObjectId.isValid(cardId)) next(new NotFoundError('Неправильное значение ID'));
   try {
     const deletingCard = await Card.findById(cardId);
@@ -44,7 +44,7 @@ const deleteCard = async function (req, res, next) {
 
 const likeCard = async function (req, res, next) {
   const userId = req.user._id;
-  const { cardId } = req.params;
+  const cardId = req.params.id;
   if (!ObjectId.isValid(cardId)) next(new NotFoundError('Неправильное значение ID'));
   try {
     const card = await Card
@@ -62,7 +62,7 @@ const likeCard = async function (req, res, next) {
 
 const dislikeCard = async function (req, res, next) {
   const userId = req.user._id;
-  const { cardId } = req.params;
+  const cardId = req.params.id;
   if (!ObjectId.isValid(cardId)) next(new NotFoundError('Неправильное значение ID'));
   try {
     const card = await Card
