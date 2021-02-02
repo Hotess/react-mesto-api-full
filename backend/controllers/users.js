@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const AlreadyExistsError = require('../errors/AlreadyExistsError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -65,26 +64,18 @@ const createUser = async function (req, res, next) {
 };
 
 const login = async function (req, res, next) {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) {
-      next(new UnauthorizedError('Неправильный почта/пароль'));
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      next(new UnauthorizedError('Неправильный почта/пароль'));
-    } else {
+  const { email, password } = req.body;
+
+  return await User.findUserByCredentials(email, password)
+    .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
         { expiresIn: '7d' },
       );
-      return res.send({ token });
-    }
-  } catch (e) {
-    next(e);
-  }
+      res.send({ token });
+    })
+    .catch(next);
 };
 
 const updateUser = async function (req, res, next) {
