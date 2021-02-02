@@ -1,47 +1,77 @@
+require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
-const { errors } = require('celebrate');
 const cors = require('cors');
-const userRouter = require('./routes/users');
-const cardsRouter = require('./routes/cards');
-const unknownRouter = require('./routes/unknown');
-const { requestLogger, errorLogger } = require('./middlewares/logger');
+const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const rateLimit = require('express-rate-limit');
+const { errors } = require('celebrate');
+const helmet = require('helmet');
+const users = require('./routes/users.js');
+const cards = require('./routes/cards.js');
+const auth = require('./middlewares/auth');
+const { login, createUser } = require('./controllers/users');
+const { errorLogger } = require('./middlewares/logger');
+const { validateUser, validateLogin } = require('./middlewares/requestValidation');
+const NotFoundError = require('./errors/NotFoundError.js');
+
+const { PORT = 3000 } = process.env;
 
 const app = express();
-const { PORT, DB } = require('./config/index');
 
-app.use(cors());
-app.use(express.json({ extended: true }));
-app.use(requestLogger);
-app.use(userRouter, cardsRouter, unknownRouter);
+app.use('/', cors());
 
-const errorHandler = async (err, req, res, next) => {
-  if (err.status) {
-    res.status(err.status).send({ message: err.message });
-  } else {
-    res.status(500).send({ message: 'Что-то пошло не так.' });
-  }
-  if(next) next()
-};
+app.use(helmet());
+app.disable('x-powered-by');
+
+app.use(cookieParser());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Слишком много запросов с вашего IP, попробуйте повторить попытку позже',
+});
+
+app.use(limiter);
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+mongoose.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
+});
+
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('Сервер сейчас упадёт');
+  }, 0);
+});
+
+app.post('/signin', validateLogin, login);
+app.post('/signup', validateUser, createUser);
+
+app.use('/', auth, users);
+app.use('/', auth, cards);
+
+app.use(() => {
+  throw new NotFoundError({ message: 'Запрашиваемый ресурс не найден' });
+});
+
 app.use(errorLogger);
+
 app.use(errors());
-app.use(errorHandler);
 
-const start = async () => {
-  try {
-    await mongoose.connect(DB, {
-      useCreateIndex: true,
-      useNewUrlParser: true,
-      useFindAndModify: false,
-      useUnifiedTopology: true,
-    });
-    app.listen(PORT, () => {
-      console.log(`Listening to port ${PORT}`);
-    });
-  } catch (e) {
-    console.log(e.message);
+app.use((err, req, res, next) => {
+  if (err.status) {
+    res.status(err.status).send(err.message);
+    return;
   }
-  return 0;
-};
+  res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` });
+  next();
+});
 
-start();
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+});

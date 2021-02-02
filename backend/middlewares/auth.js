@@ -1,20 +1,25 @@
 const jwt = require('jsonwebtoken');
-const { jwtSecret } = require('../config/index');
-const { UnauthorizedError } = require('../errors/index');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
-const authMiddleware = (req, res, next) => {
-  try {
-    const { authorization } = req.headers;
-    const token = authorization.includes('Bearer ') ? authorization.split(' ')[1] : null;
-    if (!token) {
-      next(new UnauthorizedError('Нет авторизации'));
-    }
-    const decoded = jwt.verify(token, jwtSecret);
-    req.user = decoded;
-    next();
-  } catch (e) {
-    next(new UnauthorizedError('Нет авторизации'));
+const { NODE_ENV, JWT_SECRET } = process.env;
+
+module.exports = (req, res, next) => {
+  const { authorization } = req.headers;
+
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    throw new UnauthorizedError({ message: 'Необходима авторизация' });
   }
-};
 
-module.exports = authMiddleware;
+  const token = authorization.replace('Bearer ', '');
+  let payload;
+
+  try {
+    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
+  } catch (err) {
+    throw new UnauthorizedError({ message: 'Необходима авторизация' });
+  }
+
+  req.user = payload;
+
+  next();
+};

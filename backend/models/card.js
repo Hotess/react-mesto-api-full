@@ -1,30 +1,31 @@
-const { model, Schema, Types } = require('mongoose');
-const { linkValidator } = require('../validation/index');
+const mongoose = require('mongoose');
+const validator = require('validator');
 
-const cardSchema = new Schema({
+const cardSchema = new mongoose.Schema({
   name: {
     type: String,
+    required: true,
     minlength: 2,
     maxlength: 30,
-    required: true,
   },
   link: {
     type: String,
     required: true,
     validate: {
-      validator: linkValidator,
-      message: 'Некорректная ссылка',
+      validator(link) {
+        return validator.isURL(link);
+      },
+      message: 'Введён некорректный URL',
     },
   },
   owner: {
-    type: Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true,
   },
   likes: [{
-    type: [Types.ObjectId],
-    default: null,
-    ref: 'user',
+    type: mongoose.Schema.Types.ObjectId,
+    default: [],
   }],
   createdAt: {
     type: Date,
@@ -32,4 +33,4 @@ const cardSchema = new Schema({
   },
 });
 
-module.exports = model('card', cardSchema);
+module.exports = mongoose.model('card', cardSchema);
