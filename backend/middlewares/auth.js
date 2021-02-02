@@ -5,7 +5,7 @@ const { UnauthorizedError } = require('../errors/index');
 const authMiddleware = (req, res, next) => {
   try {
     const { authorization } = req.headers;
-    const token = authorization?.includes('Bearer ') ? authorization.split(' ')?.[1] : null;
+    const token = authorization.includes('Bearer ') ? authorization.split(' ')[1] : null;
     if (!token) {
       next(new UnauthorizedError('Нет авторизации'));
     }

@@ -79,7 +79,7 @@ const signin = async (req, res, next) => {
       next(new UnauthorizedError('Неправильный почта/пароль'));
     }else{
     const token = jwt.sign(
-      { _id: user?._id },
+      { _id: user._id },
       jwtSecret,
       { expiresIn: '7d' },
     );
