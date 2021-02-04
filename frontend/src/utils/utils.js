@@ -1,5 +1,5 @@
 export const apiOptions = {
-	baseUrl: 'http://localhost:3001/',
+	baseUrl: 'http://api.leon.students.nomoreparties.xyz/',
 	headers: {
 		'Content-Type': 'application/json',
 	}
