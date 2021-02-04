@@ -1,5 +1,5 @@
 export const apiOptions = {
-	baseUrl: 'http://api.tiger.students.nomoreparties.xyz/',
+	baseUrl: '/',
 	headers: {
 		'Content-Type': 'application/json',
 	}

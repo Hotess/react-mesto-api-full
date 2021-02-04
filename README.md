@@ -1,4 +1,4 @@
-# Проект [Mesto](http://leon.students.nomoreparties.xyz) фронтенд + бэкенд.
+# Проект [Mesto](https://tiger.students.nomoreparties.xyz) фронтенд + бэкенд.
 
 ## Директории
 
