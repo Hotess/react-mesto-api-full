@@ -19,19 +19,7 @@ const { PORT = 3000 } = process.env;
 
 const app = express();
 
-app.use(cors({
-  origin: [
-    'http://leon.students.nomoreparties.xyz/sign-in',
-    'https://leon.students.nomoreparties.xyz/sign-in',
-    'http://www.leon.students.nomoreparties.xyz/sign-in',
-    'https://www.leon.students.nomoreparties.xyz/sign-in',
-  ],
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
-  allowedHeaders: ['Content-Type', 'Origin', 'Referer', 'Accept', 'Authorization'],
-  credentials: true,
-}));
+app.use(cors());
 
 app.use(helmet());
 app.disable('x-powered-by');
