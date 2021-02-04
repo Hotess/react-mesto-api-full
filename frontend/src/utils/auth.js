@@ -5,7 +5,9 @@ import { apiOptions } from './utils';
 /** Отправлять запрос на регистрацию */
 export const register = (password, email) => fetch(`${apiOptions.baseUrl}signup`, {
 	method: 'POST',
-	headers: apiOptions.headers,
+	headers: {
+		'Content-Type': 'application/json'
+	},
 	body: JSON.stringify({ password, email }),
 })
 .then((res) => {
@@ -19,13 +21,21 @@ export const register = (password, email) => fetch(`${apiOptions.baseUrl}signup`
 /** Отправлять запрос на авторизацию */
 export const authorize = (password, email) => fetch(`${apiOptions.baseUrl}signin`, {
 	method: 'POST',
-	headers: apiOptions.headers,
-	credentials: apiOptions.credentials,
+	headers: {
+		'Content-Type': 'application/json'
+	},
 	body: JSON.stringify({ password, email }),
 })
 .then((res) => {
 	return res.ok ? res.json() : Promise.reject(res);
 })
+	.then((res) => {
+		if (res.token) {
+			localStorage.setItem('jwt', res.token);
+
+			return res;
+		}
+	})
 .catch(err => {
 	if (err.status === 400) {
 		throw new BadRequestError('Не передано одно из полей');
@@ -36,22 +46,13 @@ export const authorize = (password, email) => fetch(`${apiOptions.baseUrl}signin
 	throw Error(`Произошла ошибка: ${err.status}`);
 });
 
-export const logOut = () => fetch(`${apiOptions.baseUrl}logout`,
-	{
-		method: 'DELETE'
-	})
-	.then((res) => {
-		return res.ok ? res.json() : Promise.reject(new Error('Что-то пошло не так!'));
-	})
-	.catch((err) => {
-		console.log(err);
-	});
-
 /** Отправлять запрос на получения токена */
-export const getContent = () => fetch(`${apiOptions.baseUrl}users/me`, {
+export const getContent = (token) => fetch(`${apiOptions.baseUrl}users/me`, {
 	method: 'GET',
-	headers: apiOptions.headers,
-	credentials: apiOptions.credentials
+	headers: {
+		'Content-Type': 'application/json',
+		'authorization':`Bearer ${token}`
+	},
 })
 .then((res) => {
 	return res.ok ? res.json() : Promise.reject(new Error(`Произошла ошибка: ${res.status}`))

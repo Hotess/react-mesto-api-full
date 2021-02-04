@@ -10,7 +10,7 @@ const helmet = require('helmet');
 const users = require('./routes/users.js');
 const cards = require('./routes/cards.js');
 const auth = require('./middlewares/auth');
-const { login, logOut, createUser } = require('./controllers/users');
+const { login, createUser } = require('./controllers/users');
 const { errorLogger } = require('./middlewares/logger');
 const { validateUser, validateLogin } = require('./middlewares/requestValidation');
 const NotFoundError = require('./errors/NotFoundError.js');
@@ -59,7 +59,6 @@ app.get('/crash-test', () => {
 });
 
 app.post('/signin', validateLogin, login);
-app.delete('/logout', logOut);
 app.post('/signup', validateUser, createUser);
 
 app.use('/', auth, users);

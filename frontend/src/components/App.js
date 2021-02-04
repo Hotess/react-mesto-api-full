@@ -27,7 +27,6 @@ import loader from '../images/infoTooltip/loader.svg';
 function App() {
     const [loggedIn, setLoggedIn] = useState(false);
     const [email, setEmail] = useState('');
-
     const [isEditProfilePopupOpen, setEditProfilePopupOpen] = useState(false);
     const [isAddPlacePopupOpen, setAddPlacePopupOpen] = useState(false);
     const [isEditAvatarPopupOpen, setEditAvatarPopupOpen] = useState(false);
@@ -76,20 +75,20 @@ function App() {
 
     /** Проверить токен на актуальность */
     React.useEffect(() => {
-        try {
-            const log = auth.getContent()
-                .then((res) => {
+        const token = (localStorage.getItem('jwt'));
+
+        if (token) {
+            try {
+                auth.getContent(token).then((res) => {
                     setEmail(res.email);
+                    setLoggedIn(true);
+                    history.push('/');
                 });
-            if (log) {
-                history.push('/');
-                setLoggedIn(true);
+            } catch (err) {
+                console.log(err);
             }
-        } catch (err) {
-            setLoggedIn(false);
-            history.push('/sign-in');
         }
-    }, [history]);
+    },[history]);
 
     /** Зарегистрироваться */
     function handleRegister(password, email) {
@@ -118,7 +117,7 @@ function App() {
 
     /** Выйти из аккаунта */
     async function handleSignOut() {
-        await auth.logOut();
+        localStorage.removeItem('jwt');
         setLoggedIn(false);
         setEmail('');
         history.push('/sign-in');
