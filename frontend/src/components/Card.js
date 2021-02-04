@@ -5,10 +5,10 @@ import { CurrentUserContext } from './../contexts/CurrentUserContext';
 function Card(props) {
 	const currentUser = React.useContext(CurrentUserContext);
 	const { card, index, onCardClick, onCardLike, onCardDelete } = props; 
-	const isLiked = card.likes.some(user => user._id === currentUser._id); 
+	const isLiked = card.likes.some(user => user === currentUser._id);
 	const buttonCardLikeClassName = isLiked ? 'element__like_active': ''; 
-	const buttonCardTrashClassName = (card.owner._id === currentUser._id) ? 'element__trash_active': ''; 
-	 
+	const buttonCardTrashClassName = (card.owner === currentUser._id) ? 'element__trash_active': '';
+
 	/** Открыть модальное изображение при клике на карточку */ 
 	function handleClickOpenModalImage() { 
 		onCardClick(card); 

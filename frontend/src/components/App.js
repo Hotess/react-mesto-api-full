@@ -65,7 +65,7 @@ function App() {
 
     /** Получить данные карточек из сервера */
     React.useEffect(() => {
-        if(loggedIn) {
+        if (loggedIn) {
             api.getInitialCards()
                 .then((cardData) => {
                     setCards(cardData);
@@ -76,20 +76,20 @@ function App() {
 
     /** Проверить токен на актуальность */
     React.useEffect(() => {
-        if (loggedIn) {
-            const jwt = localStorage.getItem('jwt');
-
-            if (jwt) {
-                auth.getContent(jwt)
-                    .then((res) => {
-                        setLoggedIn(true);
-                        setEmail(res.email);
-                        history.push('/');
-                    })
-                    .catch(err => console.log(err));
+        try {
+            const log = auth.getContent()
+                .then((res) => {
+                    setEmail(res.email);
+                });
+            if (log) {
+                history.push('/');
+                setLoggedIn(true);
             }
+        } catch (err) {
+            setLoggedIn(false);
+            history.push('/sign-in');
         }
-    }, [loggedIn, history]);
+    }, [history]);
 
     /** Зарегистрироваться */
     function handleRegister(password, email) {
@@ -104,13 +104,12 @@ function App() {
     }
 
     /** Авторизироваться */
-    function handleLogin(password, email) {
-        auth.authorize(escape(password), email)
+    async function handleLogin(password, email) {
+        await auth.authorize(escape(password), email)
             .then(() => {
-                // setEmail(email);
                 setLoggedIn(true);
-                setMessage({ iconPath: resolvePath, text: 'Вы успешно вошли в приложение!' });
                 history.push('/');
+                setMessage({ iconPath: resolvePath, text: 'Вы успешно авторизовались' });
             })
             .catch((err) => setMessage({ iconPath: rejectPath, text: err.message }));
 
@@ -118,16 +117,16 @@ function App() {
     }
 
     /** Выйти из аккаунта */
-    function handleSignOut() {
+    async function handleSignOut() {
+        await auth.logOut();
         setLoggedIn(false);
-        localStorage.removeItem('jwt');
         setEmail('');
         history.push('/sign-in');
     }
 
     /** Поставить/убрать лайк */
     function handleCardLike(card) {
-        const isLiked = card.likes.some((i) => i._id === currentUser._id);
+        const isLiked = card.likes.some((user) => user === currentUser._id);
 
           api.changeLikeCardStatus(card._id, !isLiked)
               .then((newCard) => {

@@ -1,9 +1,7 @@
-const token = localStorage.getItem('jwt');
-
 export const apiOptions = {
-	baseUrl: 'http://api.leon.students.nomoreparties.xyz/',
+	baseUrl: 'http://localhost:3001/',
 	headers: {
 		'Content-Type': 'application/json',
-		'authorization':`Bearer ${token}`
-	}
+	},
+	credentials: 'include'
 };

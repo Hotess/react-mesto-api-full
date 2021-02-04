@@ -1,12 +1,10 @@
 const Card = require('../models/card');
-const BadRequestError = require('../errors/BadRequestError');
-const NotFoundError = require('../errors/NotFoundError');
-const ForbiddenError = require('../errors/ForbiddenError');
+const { currentError } = require('../utils/errors');
 
 module.exports.getCards = (req, res) => {
   Card.find({})
     .populate('user')
-    .then((cards) => res.send({ data: cards }))
+    .then((cards) => res.send(cards))
     .catch((err) => res.status(500).send({ message: `На сервере произошла ошибка: ${err.message}` }));
 };
 
@@ -15,9 +13,9 @@ module.exports.createCard = (req, res, next) => {
 
   Card.create({ name, link, owner: req.user._id })
     .catch((err) => {
-      throw new BadRequestError({ message: `Указаны некорректные данные при создании карточки: ${err.message}` });
+      currentError(err, res);
     })
-    .then((card) => res.status(201).send({ data: card }))
+    .then((card) => res.status(201).send(card))
     .catch(next);
 };
 
@@ -25,11 +23,11 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findById(req.params._id)
     .orFail()
     .catch(() => {
-      throw new NotFoundError({ message: 'Нет карточки с таким id' });
+      currentError({ name: 'DocumentNotFoundError' });
     })
     .then((card) => {
       if (card.owner.toString() !== req.user._id) {
-        throw new ForbiddenError({ message: 'Недостаточно прав для выполнения операции' });
+        currentError({ name: 'ForbiddenError' });
       }
       Card.findByIdAndDelete(req.params._id)
         .then((cardData) => {
@@ -46,7 +44,7 @@ module.exports.likeCard = (req, res, next) => {
     { new: true })
     .orFail()
     .catch(() => {
-      throw new NotFoundError({ message: 'Нет карточки с таким id' });
+      currentError({ name: 'DocumentNotFoundError' });
     })
     .then((likes) => res.send(likes))
     .catch(next);
@@ -58,7 +56,7 @@ module.exports.dislikeCard = (req, res, next) => {
     { new: true })
     .orFail()
     .catch(() => {
-      throw new NotFoundError({ message: 'Нет карточки с таким id' });
+      currentError({ name: 'DocumentNotFoundError' });
     })
     .then((likes) => res.send(likes))
     .catch(next);

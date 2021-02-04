@@ -10,16 +10,25 @@ const helmet = require('helmet');
 const users = require('./routes/users.js');
 const cards = require('./routes/cards.js');
 const auth = require('./middlewares/auth');
-const { login, createUser } = require('./controllers/users');
+const { login, logOut, createUser } = require('./controllers/users');
 const { errorLogger } = require('./middlewares/logger');
 const { validateUser, validateLogin } = require('./middlewares/requestValidation');
 const NotFoundError = require('./errors/NotFoundError.js');
 
-const { PORT = 3000 } = process.env;
+const { PORT = 3001 } = process.env;
 
 const app = express();
 
-app.use('/', cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  allowedHeaders: ['Content-Type', 'Origin', 'Referer', 'Accept', 'Authorization'],
+  credentials: true,
+}));
 
 app.use(helmet());
 app.disable('x-powered-by');
@@ -50,6 +59,7 @@ app.get('/crash-test', () => {
 });
 
 app.post('/signin', validateLogin, login);
+app.delete('/logout', logOut);
 app.post('/signup', validateUser, createUser);
 
 app.use('/', auth, users);

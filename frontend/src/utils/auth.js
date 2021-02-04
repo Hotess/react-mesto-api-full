@@ -1,13 +1,11 @@
 import BadRequestError from '../errors/BadRequestError';
 import UnauthorizedError from '../errors/UnauthorizedError';
-export const BASE_URL = 'http://api.leon.students.nomoreparties.xyz';
+import { apiOptions } from './utils';
 
 /** Отправлять запрос на регистрацию */
-export const register = (password, email) => fetch(`${BASE_URL}/signup`, {
+export const register = (password, email) => fetch(`${apiOptions.baseUrl}signup`, {
 	method: 'POST',
-	headers: {
-		'Content-Type': 'application/json',
-	},
+	headers: apiOptions.headers,
 	body: JSON.stringify({ password, email }),
 })
 .then((res) => {
@@ -19,20 +17,14 @@ export const register = (password, email) => fetch(`${BASE_URL}/signup`, {
 });
 
 /** Отправлять запрос на авторизацию */
-export const authorize = (password, email) => fetch(`${BASE_URL}/signin`, {
+export const authorize = (password, email) => fetch(`${apiOptions.baseUrl}signin`, {
 	method: 'POST',
-	headers: {
-		'Content-Type': 'application/json',
-	},
+	headers: apiOptions.headers,
+	credentials: apiOptions.credentials,
 	body: JSON.stringify({ password, email }),
 })
 .then((res) => {
 	return res.ok ? res.json() : Promise.reject(res);
-})
-.then((data) => {
-	localStorage.setItem('jwt', data.token);
-
-	return data.token;
 })
 .catch(err => {
 	if (err.status === 400) {
@@ -44,13 +36,22 @@ export const authorize = (password, email) => fetch(`${BASE_URL}/signin`, {
 	throw Error(`Произошла ошибка: ${err.status}`);
 });
 
+export const logOut = () => fetch(`${apiOptions.baseUrl}logout`,
+	{
+		method: 'DELETE'
+	})
+	.then((res) => {
+		return res.ok ? res.json() : Promise.reject(new Error('Что-то пошло не так!'));
+	})
+	.catch((err) => {
+		console.log(err);
+	});
+
 /** Отправлять запрос на получения токена */
-export const getContent = (token) => fetch(`${BASE_URL}/users/me`, {
+export const getContent = () => fetch(`${apiOptions.baseUrl}users/me`, {
 	method: 'GET',
-	headers: {
-		'Content-Type': 'application/json',
-		'Authorization': `Bearer ${token}`,
-	},
+	headers: apiOptions.headers,
+	credentials: apiOptions.credentials
 })
 .then((res) => {
 	return res.ok ? res.json() : Promise.reject(new Error(`Произошла ошибка: ${res.status}`))
