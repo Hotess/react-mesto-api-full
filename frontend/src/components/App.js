@@ -106,6 +106,7 @@ function App() {
     async function handleLogin(password, email) {
         await auth.authorize(escape(password), email)
             .then(() => {
+                setEmail(email);
                 setLoggedIn(true);
                 history.push('/');
                 setMessage({ iconPath: resolvePath, text: 'Вы успешно авторизовались' });
