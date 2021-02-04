@@ -20,7 +20,12 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 app.use(cors({
-  origin: '*',
+  origin: [
+    'http://leon.students.nomoreparties.xyz/sign-in',
+    'https://leon.students.nomoreparties.xyz/sign-in',
+    'http://www.leon.students.nomoreparties.xyz/sign-in',
+    'https://www.leon.students.nomoreparties.xyz/sign-in',
+  ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   preflightContinue: false,
   optionsSuccessStatus: 204,
