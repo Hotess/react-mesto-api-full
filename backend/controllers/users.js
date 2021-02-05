@@ -21,7 +21,7 @@ module.exports.checkToken = (req, res, next) => {
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
-  User.findById(req.user._id)
+  User.findById(req.params.id)
     .orFail()
     .catch((err) => {
       currentError(err, res);
