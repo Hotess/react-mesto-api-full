@@ -21,8 +21,9 @@
 Для запуска проекта:
 1. Клонировать репозиторий
 2. Установить зависимости `npm install`
-3. Запустить проект `npm start`
-4. Проект запускается на http://localhost:3000/
+3. Запустить проект на стороне back-end `npm run dev`
+4. Запустить проект на стороне front-end `npm run start` (нужно добавить директорию './frontend' в node_modules/react-scriptconfig/path.js )
+5. Проект запускается на http://localhost:3000/
 
 ## Запросы
 
