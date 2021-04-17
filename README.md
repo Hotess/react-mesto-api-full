@@ -1,5 +1,6 @@
-# Проект [Mesto](https://tiger.students.nomoreparties.xyz) REST API для одностраничного приложения
+# Проект Mesto REST API для одностраничного приложения
 ---
+![Превью проекта Mesto REST API](./mesto.png)
 
 ## Стек
 
