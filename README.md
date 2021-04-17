@@ -1,4 +1,4 @@
-# Проект [Mesto] REST API для одностраничного приложения(https://tiger.students.nomoreparties.xyz)
+# Проект [Mesto](https://tiger.students.nomoreparties.xyz) REST API для одностраничного приложения
 ---
 
 ## Стек
